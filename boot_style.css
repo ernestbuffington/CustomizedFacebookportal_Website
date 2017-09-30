@@ -1,0 +1,69 @@
+
+.nav-tabs{
+  border-bottom-color: #5252b4;
+  border-bottom-width: 4px;
+  color : black;
+}
+.nav-tabs > li > a{
+  color:black;
+}
+.nav-tabs > li > a:hover{
+  background-color: white ;
+  border-color: white;
+  border-bottom-color: #5252b4;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover{
+  background-color: #5252b4 ;
+  color:white;
+}
+
+.heading_class{
+  background-color: #e1d2d233;
+  color :  #5252b4 ;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    height: 30px;
+    background-color: white;
+    border-style: solid;
+}
+
+#search_button{
+  background-color: #5252b4;
+}
+
+.glyphicon{
+  color: white;
+}
+
+.btn{
+border-color: #5252b4;
+background-color: white;
+}
+
+.glyphicon-star-empty{
+  color : black;
+  background-color: white;
+}
+
+
+.glyphicon-star{
+  color : yellow;
+  background-color: white;
+}
+
+.glyphicon-trash{
+  color : black;
+  background-color: white;
+}
+
+.glyphicon-chevron-right, .glyphicon-chevron-left{
+  color: black;
+}

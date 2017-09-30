@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" >
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Bootstrap 101 Template</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet"  href="boot_style.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+      <script src="http://connect.facebook.net/en_US/sdk.js"></script>
+      <script src="boot_js.js"></script>
+      <!-- <script src="controller.js"></script> -->
+   </head>
+   <body  ng-controller = "myCtrl" ng-init = "$parent.start = 0;">
+      <div class="container">
+         <div class="heading_class">
+            <form id="page_header">
+               FB Search
+               <input type="text" ng-model="input_field" placeholder="Type in something...">
+               <button id="search_button" type="button" class="btn btn-default" ng-click="hit_ajax()"><i class="glyphicon glyphicon-search"></i></button>
+               <input class = "btn" type="reset" value="Clear" id="clear_button">
+               <p id="tab_choice_1" style="display:none" >user</p>
+            </form>
+         </div>
+         <ul class="nav nav-tabs">
+            <li class="active" id='user'><a data-toggle="tab" href="#Users" >Users</a></li>
+            <li><a data-toggle="tab" href="#Users" id='page'>Pages</a></li>
+            <li><a data-toggle="tab" href="#Users">Events</a></li>
+            <li><a data-toggle="tab" href="#Users">Places</a></li>
+            <li><a data-toggle="tab" href="#Users">Groups</a></li>
+            <li><a data-toggle="tab" href="#Favorites">Favorites</a></li>
+         </ul>
+         <div class="tab-content" id="tabContent"style="display:none">
+           <div id="table_progress_bar" class="progress" style="display:none">
+             <div class="progress-bar progress-bar-striped active" role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="width:50%">
+             </div>
+           </div>
+            <div id="Users" class="tab-pane fade in active" style="display:none">
+               <center>
+                  <button type="button" ng-click="get_prevUsers()" ng-show="showPrev">Previous</button>
+                  <button type="button" ng-click="get_nextUsers()" ng-show="showNext">Next</button>
+               </center>
+               <table class = "table table-hover" style="display : block" >
+                  <thead>
+                     <tr>
+                        <th>#</th>
+                        <th>Profile Photo</th>
+                        <th>Name</th>
+                        <th>Favorite</th>
+                        <th>Details</th>
+                     </tr>
+                  </thead>
+                  <tbody >
+                     <tr ng-init="num = $parent.start; $parent.start=$parent.start+1; " ng-repeat = "item in users_type">
+                        <td>{{$index+1}}</td>
+                        <td><img class = "img-thumbnail img-circle" ng-src = "{{item.picture.data.url}}" style="width:50px;height:50px;"></td>
+                        <td>{{item.name}}</td>
+                        <!-- <td><button id="favourite_button{{num}}" ng-click=store_in_local(item,num)><i class="glyphicon glyphicon-star-empty"></i></button></td> -->
+                        <td><button id="favourite_button{{num}}" ng-click=store_in_local(item,num,1)><i ng-class="{'glyphicon glyphicon-star-empty': !present(item), 'glyphicon glyphicon-star': present(item)}"></i></button></td>
+                        <td><button id="getAlbums" ng-click="get_albums(item.id, item.name, item.picture.data.url, item)"><i class="glyphicon glyphicon-chevron-right" style="color : black"></i></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div id="Favorites" class="tab-pane fade" style="display:block">
+               <table class = "table table-hover" style="display : block">
+                  <thead>
+                     <tr>
+                        <th>#</th>
+                        <th>Profile Photo</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Favorite</th>
+                        <th>Details</th>
+
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat = "item in favourite_stored">
+                        <td>{{index+1}}</td>
+                        <td><img class = "img-thumbnail img-circle" ng-src = "{{item.picture.data.url}}" style="width:50px;height:50px;"></td>
+                        <td>{{item.name}}</td>
+                        <!-- <td>{{item.tab}}</td> -->
+                        <!-- <td><button id="favourite_button{{num}}" ng-click=store_in_local(item,num)><i class="glyphicon glyphicon-star-empty"></i></button></td> -->
+                        <td><button type="button" class="btn btn-default" ng-click="del_from_fav(item)"><i class="glyphicon glyphicon-trash"></i></button></td>
+                        <td><button ng-click="get_albums(item.id, item.name, item.picture.data.url)"><i class="glyphicon glyphicon-chevron-right"></i></td>
+                        <td>
+                           <p id="user_id" ></p>
+                        </td>
+                     </tr>
+                  </tbody>
+              </table>
+            </div>
+            <div class="row">
+               <!-- Albums  -->
+               <button id="back" onclick="back_to_table()" style="display:none;"><i class="glyphicon glyphicon-chevron-left">Back</i></button>
+               <button id="fb" ng-click="post_on_fb()" style="display:none;">fb</button>
+               <button id="star_in_album" style="display:none;" ng-click="store_in_local(cur,1000,2)"><i ng-class="{'glyphicon glyphicon-star-empty': !present(cur), 'glyphicon glyphicon-star': present(cur)}"></i></button>
+                 <div class = "col-sm-6">
+                  <div id="albums" class="panel panel-default" style="display : none;">
+                     <div class = " panel-heading">Albums</div>
+                     <br>
+                     <div div class = " panel-body panel" id="album_bar" style="display:none">
+                       <div  class="progress" >
+                       <div class="progress-bar progress-bar-striped active" role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                       </div>
+                     </div></div>
+
+                     <div class = " panel-body panel panel-warning" id="no_album_warning">
+                        {{noAlbum}}
+                     </div>
+                     <!-- strats the albums group -->
+                     <div class="panel-group" id="accordion">
+                        <!-- first album -->
+                        <div class = "panel panel-default" >
+                           <div class = " panel-heading"><a href="#{{firstAlbum.id}}" data-parent="#accordion" data-toggle="collapse">{{firstAlbum.name}}</a></div>
+                           <div id="{{firstAlbum.id}}" class="collapse in">
+                              <div class = " panel-body" ng-repeat = "pic_object1 in firstAlbum.photos.data"><img src={{pic_object1.picture}}>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- remaining albums -->
+                        <div class = "panel panel-default" ng-repeat = "album in albumArray">
+                           <div class = " panel-heading"><a data-toggle="collapse" data-parent="#accordion" href="#{{album.id}}">{{album.name}}</a></div>
+                           <div id="{{album.id}}" class="collapse ">
+                              <div class = " panel-body" ng-repeat = "pic_object in album.photos.data"><img src={{pic_object.picture}}>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <!-- posts -->
+               <div class = "col-sm-6">
+
+                  <div id="posts" class="panel panel-default" style="display : none;">
+                     <div class = " panel-heading">Posts</div>
+                     <br>
+                     <div div class = " panel-body panel" id="post_bar" style="display:none">
+                       <div  class="progress" >
+                       <div class="progress-bar progress-bar-striped active" role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                       </div>
+                     </div></div>
+                     <div class = " panel-body panel panel-warning" id="no_post_warning">
+                        {{noPost}}
+                     </div>
+                     <div id="posts_found">
+                     <div class = "panel panel-default" ng-repeat = "post in postArray" >
+                        <div class = " panel-body">
+                           <h6><img class = "img-thumbnail" ng-src = "{{img_url}}" style="width:40px;height:40px;">
+                              <b>{{profile_name}}</b><br>
+                              {{post.created_time}}
+                           </h6>
+                           {{post.message}}
+                        </div>
+                     </div></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
